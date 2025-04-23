@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Table,
@@ -91,7 +90,6 @@ const salesData = [
   },
 ];
 
-
 const StyledTableContainer = styled(Paper)(() => ({
   borderRadius: 8,
   boxShadow: 3,
@@ -107,7 +105,7 @@ const SuccessButton = styled(Button)(() => ({
 
 const Leaderboard = () => {
   const [selected, setSelected] = useState([]);
-console.log("selected",selected);
+  console.log("selected", selected);
 
   const handleClick = (id) => {
     setSelected((prevSelected) =>
@@ -118,7 +116,7 @@ console.log("selected",selected);
   };
 
   return (
-    <Box sx={{ width: "100%", margin: "auto", mt: 4}}>
+    <Box sx={{ width: "100%", margin: "auto", mt: 4 }}>
       <Box
         sx={{
           display: "flex",
@@ -131,7 +129,11 @@ console.log("selected",selected);
         <PDFDownloadLink
           document={
             <Sales_Pdf_Documnet
-              data={selected.length > 0 ? salesData.filter((row) => selected.includes(row.id)) : salesData}
+              data={
+                selected.length > 0
+                  ? salesData.filter((row) => selected.includes(row.id))
+                  : salesData
+              }
             />
           }
           fileName="sales-leaderboard.pdf"
@@ -147,20 +149,34 @@ console.log("selected",selected);
           }
         </PDFDownloadLink>
       </Box>
-      <StyledTableContainer sx={{
-borderRadius: "16px", 
-boxShadow: 3,
-overflow: "hidden",
-      }}> 
+      <StyledTableContainer
+        sx={{
+          borderRadius: "16px",
+          boxShadow: 3,
+          overflow: "hidden",
+        }}
+      >
         <Table>
-          <TableHead sx={{bgcolor:"#5D5FEF", color:"white"}}>
+          <TableHead sx={{ bgcolor: "#5D5FEF", color: "white" }}>
             <TableRow>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>Select</TableCell>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>ID</TableCell>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>Name</TableCell>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>Sales ($)</TableCell>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>Region</TableCell>
-              <TableCell sx={{ color: "white", fontWeight:700, fontSize:20}}>Last Activity</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                Select
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                ID
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                Name
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                Sales ($)
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                Region
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: 700, fontSize: 20 }}>
+                Last Activity
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -169,15 +185,13 @@ overflow: "hidden",
                 <TableCell padding="checkbox">
                   <Checkbox
                     color="primary"
-                    checked={selected.includes(row.id) || false}
                     onChange={() => handleClick(row.id)}
+                    checked={selected.includes(row.id)}
                   />
                 </TableCell>
                 <TableCell>{row.id}</TableCell>
                 <TableCell>{row.name}</TableCell>
-                <TableCell>
-                  {row.sales}
-                </TableCell>
+                <TableCell>{row.sales}</TableCell>
                 <TableCell>{row.region}</TableCell>
                 <TableCell>{row.lastActivity}</TableCell>
               </TableRow>
