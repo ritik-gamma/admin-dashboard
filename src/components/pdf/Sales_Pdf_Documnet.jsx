@@ -49,7 +49,7 @@ const tableFiled = [
 
 const Sales_Pdf_Document = ({ data }) => {
   return (
-    <Document>
+    <Document style={{border:1}}>
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>Sales Leaderboard</Text>
 
