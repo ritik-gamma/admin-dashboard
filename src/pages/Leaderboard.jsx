@@ -7,15 +7,18 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button,
   Box,
   Checkbox,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { FileDownload } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import { green } from "@mui/material/colors";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { pdf, } from "@react-pdf/renderer";
 import Sales_Pdf_Documnet from "../components/pdf/Sales_Pdf_Documnet";
+import { Builder } from "xml2js";
+
 
 const salesData = [
   {
@@ -95,17 +98,10 @@ const StyledTableContainer = styled(Paper)(() => ({
   boxShadow: 3,
 }));
 
-const SuccessButton = styled(Button)(() => ({
-  color: "white",
-  backgroundColor: green[500],
-  "&:hover": {
-    backgroundColor: green[700],
-  },
-}));
-
 const Leaderboard = () => {
   const [selected, setSelected] = useState([]);
-  console.log("selected", selected);
+  const [exportOption, setExportOption] = useState("");
+
 
   const handleClick = (id) => {
     setSelected((prevSelected) =>
@@ -114,6 +110,88 @@ const Leaderboard = () => {
         : [...prevSelected, id]
     );
   };
+
+
+  const handelExportChange = async (e) => {
+    const option = e.target.value;
+    setExportOption(option);
+
+    if (option === "PDF") {
+      await ExportPDF(); 
+    } else if (option === "XML") {
+      ExportXML();
+    }else if(option === "CSV"){
+      DownloadCSV()
+    }
+  };
+
+
+  const ExportPDF = async () => {
+    const pdfData =
+      selected.length > 0
+        ? salesData.filter((row) => selected.includes(row.id))
+        : salesData;
+
+    const blob = await pdf(<Sales_Pdf_Documnet data={pdfData} />).toBlob();
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "sales-leaderboard.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
+  const ExportXML = () => {
+    const dataToExport =
+      selected.length > 0
+        ? salesData.filter((row) => selected.includes(row.id))
+        : salesData;
+  
+    // console.log("Data to Export:", dataToExport);
+  
+    const builder = new Builder();
+    const xmlData = builder.buildObject({ salesData: dataToExport });
+  
+    // console.log("Generated XML:", xmlData);
+  
+
+    const blob = new Blob([xmlData], { type: "application/xml" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "sales-data.xml";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  
+    // console.log("XML Export Completed!");
+  };
+
+  const DownloadCSV = () => {
+    const csvString = [
+      ["ID", "Name", "Sales $", "Region", "Last Activity"],
+      ...salesData.map(item => [
+        item.id,
+        item.name,
+        item.sales,
+        item.region,
+        item.lastActivity
+      ])
+    ]
+      .map(row => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "leaderboard.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   return (
     <Box sx={{ width: "100%", margin: "auto", mt: 4 }}>
@@ -126,28 +204,20 @@ const Leaderboard = () => {
         }}
       >
         <Typography variant="h5">Sales Leaderboard</Typography>
-        <PDFDownloadLink
-          document={
-            <Sales_Pdf_Documnet
-              data={
-                selected.length > 0
-                  ? salesData.filter((row) => selected.includes(row.id))
-                  : salesData
-              }
-            />
-          }
-          fileName="sales-leaderboard.pdf"
-        >
-          {({ loading }) =>
-            loading ? (
-              "Generating PDF"
-            ) : (
-              <SuccessButton variant="contained" startIcon={<FileDownload />}>
-                Export
-              </SuccessButton>
-            )
-          }
-        </PDFDownloadLink>
+        <FormControl sx={{ width: 120 }}>
+          <InputLabel id="demo-simple-select-label">Export</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Export"
+            value={exportOption}
+            onChange={handelExportChange}
+          >
+            <MenuItem value="PDF">PDF</MenuItem>
+            <MenuItem value="XML">XML</MenuItem>
+            <MenuItem value="CSV">CSV</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
       <StyledTableContainer
         sx={{

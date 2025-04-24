@@ -22,7 +22,8 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.1",
     "react-simple-maps": "^3.0.0",
-    "world-atlas": "^2.0.2"
+    "world-atlas": "^2.0.2",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
